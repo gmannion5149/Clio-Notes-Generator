@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GWM – Clio Note Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f5f5f3;
+      --bg-info: #e6f1fb;
+      --border: rgba(0,0,0,0.12);
+      --border-hover: rgba(0,0,0,0.25);
+      --border-strong: rgba(0,0,0,0.4);
+      --border-info: rgba(24,95,165,0.35);
+      --border-success: rgba(15,110,86,0.4);
+      --text: #1a1a18;
+      --text-secondary: #5f5e5a;
+      --text-tertiary: #888780;
+      --text-info: #185fa5;
+      --text-success: #0f6e56;
+      --pill-selected-bg: #e6f1fb;
+      --pill-selected-border: rgba(24,95,165,0.35);
+      --pill-selected-text: #185fa5;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --font-sans: 'IBM Plex Sans', sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1e1e1c;
+        --bg-secondary: #2a2a28;
+        --bg-info: #0c2d4a;
+        --border: rgba(255,255,255,0.1);
+        --border-hover: rgba(255,255,255,0.22);
+        --border-strong: rgba(255,255,255,0.35);
+        --border-info: rgba(133,183,235,0.3);
+        --border-success: rgba(93,202,165,0.3);
+        --text: #e8e6df;
+        --text-secondary: #a8a69f;
+        --text-tertiary: #6e6d69;
+        --text-info: #85b7eb;
+        --text-success: #5dcaa5;
+        --pill-selected-bg: #0c2d4a;
+        --pill-selected-border: rgba(133,183,235,0.35);
+        --pill-selected-text: #85b7eb;
+      }
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-secondary);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .app {
+      max-width: 700px;
+      margin: 0 auto;
+      background: var(--bg);
+      border-radius: var(--radius-lg);
+      border: 0.5px solid var(--border);
+      padding: 2rem 1.75rem 2.5rem;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .header-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--bg-info);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--text-info);
+    }
+
+    .header-text h1 {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .header-text p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 1.75rem;
+    }
+
+    .tab {
+      background: var(--bg-secondary);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 9px 6px;
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      cursor: pointer;
+      text-align: center;
+      line-height: 1.3;
+      transition: all 0.15s;
+    }
+
+    .tab:hover {
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+
+    .tab.active {
+      background: var(--bg);
+      border-color: var(--border-strong);
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .form-section { margin-bottom: 1.35rem; }
+
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 7px;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 13px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      border-color: var(--border-strong);
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 75px;
+      line-height: 1.55;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .pill {
+      background: var(--bg-secondary);
+      border: 0.5px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 13px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+
+    .pill:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .pill.selected {
+      background: var(--pill-selected-bg);
+      border-color: var(--pill-selected-border);
+      color: var(--pill-selected-text);
+      font-weight: 500;
+    }
+
+    .generate-btn {
+      width: 100%;
+      background: var(--text);
+      color: var(--bg);
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 0.75rem;
+      transition: opacity 0.15s;
+    }
+
+    .generate-btn:hover { opacity: 0.82; }
+    .generate-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .output-box {
+      display: none;
+      margin-top: 1.75rem;
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .output-box.visible { display: block; }
+
+    .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-secondary);
+      border-bottom: 0.5px solid var(--border);
+    }
+
+    .output-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+
+    .copy-btn {
+      background: none;
+      border: 0.5px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 11px;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .copy-btn.copied {
+      color: var(--text-success);
+      border-color: var(--border-success);
+    }
+
+    .output-text {
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.75;
+      white-space: pre-wrap;
+      word-break: break-word;
+      min-height: 80px;
+    }
+
+    .spinner {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .spinner.visible { display: flex; }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-tertiary);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    @media (max-width: 520px) {
+      .app { padding: 1.25rem 1rem 2rem; }
+      .tabs { grid-template-columns: repeat(2, 1fr); }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="header-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+        <polyline points="10 9 9 9 8 9"/>
+      </svg>
+    </div>
+    <div class="header-text">
+      <h1>GWM – Clio Note Generator</h1>
+      <p>Select a note type, fill in the details, generate and copy</p>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('intake')">Intake Note</button>
+    <button class="tab" onclick="switchTab('court')">Court Summary</button>
+    <button class="tab" onclick="switchTab('review')">Case Review</button>
+    <button class="tab" onclick="switchTab('implied')">Implied Consent</button>
+  </div>
+
+  <!-- ── INTAKE ── -->
+  <div id="form-intake">
+    <div class="form-section">
+      <label class="form-label">Caller</label>
+      <div class="pill-group">
+        <button class="pill" onclick="togglePill(this,'i-caller')">PC</button>
+        <button class="pill" onclick="togglePill(this,'i-caller')">PC Family</button>
+        <button class="pill" onclick="togglePill(this,'i-caller')">PC Friend</button>
+      </div>
+      <input type="hidden" id="i-caller" />
+    </div>
+    <div class="form-section">
+      <label class="form-label">PC name</label>
+      <input class="form-input" id="i-name" placeholder="First Last" />
+    </div>
+    <div class="form-section">
+      <label class="form-label">Court file number or case type</label>
+      <div class="pill-group" style="margin-bottom:8px;">
+        <button class="pill" onclick="togglePill(this,'i-casetype')">DWI – 4th Degree</button>
+        <button class="pill" onclick="togglePill(this,'i-casetype')">DWI – 3rd Degree</button>
+        <button class="pill" onclick="togglePill(this,'i-casetype')">DWI – 2nd Degree</button>
+        <button class="pill" onclick="togglePill(this,'i-casetype')">DWI – 1st Degree</button>
+        <button class="pill" onclick="togglePill(this,'i-casetype')">Test Refusal</button>
+        <button class="pill" onclick="togglePill(this,'i-casetype')">Drug Offense</button>
+        <button class="pill" onclick="togglePill(this,'i-casetype')">Assault</button>
+        <button class="pill" onclick="togglePill(this,'i-casetype')">Theft</button>
+        <button class="pill" onclick="togglePill(this,'i-casetype')">Other</button>
+      </div>
+      <input class="form-input" id="i-casetype" placeholder="Or enter court file number / charge manually" />
+    </div>
+    <div class="form-section">
+      <label class="form-label">Court date</label>
+      <input class="form-input" type="date" id="i-courtdate" />
+    </div>
+    <div class="form-section">
+      <div class="form-row">
+        <div>
+          <label class="form-label">City</label>
+          <input class="form-input" id="i-city" placeholder="e.g. Minneapolis" />
+        </div>
+        <div>
+          <label class="form-label">County</label>
+          <input class="form-input" id="i-county" placeholder="e.g. Hennepin" />
+        </div>
+      </div>
+    </div>
+    <div class="form-section">
+      <label class="form-label">Details</label>
+      <p class="hint">Enter each detail on its own line</p>
+      <textarea class="form-textarea" id="i-details" style="min-height:100px"
+        placeholder="e.g.&#10;PC arrested after traffic stop on I-394&#10;Submitted to breath test, result 0.14&#10;No prior DWI record&#10;Currently holds CDL"></textarea>
+    </div>
+    <div class="form-section">
+      <label class="form-label">Fee quoted</label>
+      <input class="form-input" id="i-fee" placeholder="e.g. $3,500 flat fee" />
+    </div>
+    <div class="form-section">
+      <label class="form-label">Next steps</label>
+      <p class="hint">Enter each step on its own line</p>
+      <textarea class="form-textarea" id="i-nextsteps" style="min-height:75px"
+        placeholder="e.g.&#10;Send retainer agreement&#10;PC to call back with decision&#10;Follow up Friday if no response"></textarea>
+    </div>
+  </div>
+
+  <!-- ── COURT SUMMARY ── -->
+  <div id="form-court" style="display:none">
+    <div class="form-section">
+      <div class="form-row">
+        <div>
+          <label class="form-label">Client name</label>
+          <input class="form-input" id="c-name" placeholder="First Last" />
+        </div>
+        <div>
+          <label class="form-label">Hearing date</label>
+          <input class="form-input" type="date" id="c-date" />
+        </div>
+      </div>
+    </div>
+    <div class="form-section">
+      <label class="form-label">Client appeared?</label>
+      <div class="pill-group">
+        <button class="pill" onclick="togglePill(this,'c-appeared')">With client</button>
+        <button class="pill" onclick="togglePill(this,'c-appeared')">Without client</button>
+      </div>
+      <input type="hidden" id="c-appeared" />
+    </div>
+    <div class="form-section">
+      <label class="form-label">Hearing type</label>
+      <div class="pill-group">
+        <button class="pill" onclick="togglePill(this,'c-type')">Arraignment</button>
+        <button class="pill" onclick="togglePill(this,'c-type')">Omnibus</button>
+        <button class="pill" onclick="togglePill(this,'c-type')">Pretrial</button>
+        <button class="pill" onclick="togglePill(this,'c-type')">Plea</button>
+        <button class="pill" onclick="togglePill(this,'c-type')">Sentencing</button>
+        <button class="pill" onclick="togglePill(this,'c-type')">Trial</button>
+        <button class="pill" onclick="togglePill(this,'c-type')">Status Conference</button>
+      </div>
+      <input type="hidden" id="c-type" />
+    </div>
+    <div class="form-section">
+      <div class="form-row">
+        <div>
+          <label class="form-label">Judge</label>
+          <input class="form-input" id="c-judge" placeholder="Hon. Smith" />
+        </div>
+        <div>
+          <label class="form-label">Prosecutor</label>
+          <input class="form-input" id="c-prosecutor" placeholder="ACA Jane Doe" />
+        </div>
+      </div>
+    </div>
+    <div class="form-section">
+      <label class="form-label">Offer bullet points</label>
+      <p class="hint">Enter each offer point on its own line</p>
+      <textarea class="form-textarea" id="c-offer" style="min-height:90px"
+        placeholder="e.g.&#10;Plead to 4th degree DWI&#10;Stay of imposition&#10;$900 fine + surcharges&#10;1 year probation"></textarea>
+    </div>
+    <div class="form-section">
+      <label class="form-label">Details bullet points</label>
+      <p class="hint">Enter each detail on its own line</p>
+      <textarea class="form-textarea" id="c-details" style="min-height:90px"
+        placeholder="e.g.&#10;State not ready on motions&#10;Body cam ordered and received&#10;Client cooperative in court"></textarea>
+    </div>
+    <div class="form-section">
+      <div class="form-row">
+        <div>
+          <label class="form-label">Next court date</label>
+          <input class="form-input" type="date" id="c-next" />
+        </div>
+        <div>
+          <label class="form-label">Next hearing type</label>
+          <input class="form-input" id="c-nexttype" placeholder="e.g. Sentencing" />
+        </div>
+      </div>
+    </div>
+    <div class="form-section">
+      <label class="form-label">Key points for client email</label>
+      <p class="hint">Fills in the "As we discussed, [INSERT KEY POINTS]" line</p>
+      <textarea class="form-textarea" id="c-keypoints" style="min-height:65px"
+        placeholder="e.g. we entered a not guilty plea, your next court date is May 15..."></textarea>
+    </div>
+  </div>
+
+  <!-- ── CASE REVIEW ── -->
+  <div id="form-review" style="display:none">
+    <div class="form-section">
+      <label class="form-label">Meeting type</label>
+      <div class="pill-group">
+        <button class="pill" onclick="togglePill(this,'r-meeting')">In Person</button>
+        <button class="pill" onclick="togglePill(this,'r-meeting')">Phone</button>
+        <button class="pill" onclick="togglePill(this,'r-meeting')">Zoom</button>
+      </div>
+      <input type="hidden" id="r-meeting" />
+    </div>
+    <div class="form-section">
+      <label class="form-label">Case discussion points</label>
+      <p class="hint">Enter each point on its own line</p>
+      <textarea class="form-textarea" id="r-discussion" style="min-height:100px"
+        placeholder="e.g.&#10;Reviewed body cam footage with client&#10;Discussed strength of stop&#10;Explained physical control standard under Starfield"></textarea>
+    </div>
+    <div class="form-section">
+      <label class="form-label">Offer relayed</label>
+      <p class="hint">Enter each term on its own line (leave blank if no offer)</p>
+      <textarea class="form-textarea" id="r-offer" style="min-height:90px"
+        placeholder="e.g.&#10;Plead to 4th Degree DWI&#10;Stay of imposition&#10;$900 fine + surcharges&#10;1 year probation"></textarea>
+    </div>
+    <div class="form-section">
+      <label class="form-label">Client position on offer</label>
+      <div class="pill-group">
+        <button class="pill" onclick="togglePill(this,'r-position')">Accepted</button>
+        <button class="pill" onclick="togglePill(this,'r-position')">Rejected</button>
+        <button class="pill" onclick="togglePill(this,'r-position')">Considering</button>
+      </div>
+      <input type="hidden" id="r-position" />
+    </div>
+    <div class="form-section">
+      <label class="form-label">GWM's advice</label>
+      <p class="hint">Enter each point on its own line</p>
+      <textarea class="form-textarea" id="r-advice" style="min-height:90px"
+        placeholder="e.g.&#10;Advised client offer is reasonable given prior record&#10;Explained trial risks and sentencing exposure"></textarea>
+    </div>
+    <div class="form-section">
+      <label class="form-label">Decision</label>
+      <p class="hint">Enter each point on its own line</p>
+      <textarea class="form-textarea" id="r-decision" style="min-height:75px"
+        placeholder="e.g.&#10;Client decided to accept the offer&#10;Plea to be entered at next court date"></textarea>
+    </div>
+    <div class="form-section">
+      <label class="form-label">Next steps</label>
+      <p class="hint">Enter each step on its own line</p>
+      <textarea class="form-textarea" id="r-nextsteps" style="min-height:75px"
+        placeholder="e.g.&#10;Contact ACA to confirm offer in writing&#10;Schedule plea hearing&#10;Send client summary email"></textarea>
+    </div>
+  </div>
+
+  <!-- ── IMPLIED CONSENT ── -->
+  <div id="form-implied" style="display:none">
+    <div class="form-section">
+      <label class="form-label">Client appeared?</label>
+      <div class="pill-group">
+        <button class="pill" onclick="togglePill(this,'ic-appeared')">With client</button>
+        <button class="pill" onclick="togglePill(this,'ic-appeared')">Without client</button>
+      </div>
+      <input type="hidden" id="ic-appeared" />
+    </div>
+    <div class="form-section">
+      <div class="form-row">
+        <div>
+          <label class="form-label">Judge</label>
+          <input class="form-input" id="ic-judge" placeholder="Hon. Smith" />
+        </div>
+        <div>
+          <label class="form-label">Assistant Attorney General</label>
+          <input class="form-input" id="ic-aag" placeholder="AAG Jane Doe" />
+        </div>
+      </div>
+    </div>
+    <div class="form-section">
+      <label class="form-label">Testifying witness</label>
+      <input class="form-input" id="ic-witness" placeholder="e.g. Deputy John Anderson, Hennepin County Sheriff" />
+    </div>
+    <div class="form-section">
+      <label class="form-label">Details bullet points</label>
+      <p class="hint">Enter each detail on its own line</p>
+      <textarea class="form-textarea" id="ic-details" style="min-height:110px"
+        placeholder="e.g.&#10;Officer testified regarding the stop and advisory&#10;Client submitted to breath test, result 0.14&#10;Challenged foundation of advisory&#10;Argued stop was pretextual&#10;Matter taken under advisement"></textarea>
+    </div>
+    <div class="form-section">
+      <label class="form-label">Brief due date</label>
+      <input class="form-input" type="date" id="ic-briefdue" />
+    </div>
+    <div class="form-section">
+      <label class="form-label">PMM note</label>
+      <p class="hint">What needs to be done / communicated after this hearing?</p>
+      <textarea class="form-textarea" id="ic-pmm" style="min-height:65px"
+        placeholder="e.g. Calendar brief due date, send client hearing summary, notify client of next steps..."></textarea>
+    </div>
+  </div>
+
+  <button class="generate-btn" id="gen-btn" onclick="generateNote()">Generate Clio note</button>
+
+  <div class="output-box" id="output-box">
+    <div class="output-header">
+      <span class="output-label" id="output-label">Note</span>
+      <button class="copy-btn" id="copy-btn" onclick="copyNote()">Copy</button>
+    </div>
+    <div class="spinner" id="spinner">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <span>Building note...</span>
+    </div>
+    <div class="output-text" id="output-text"></div>
+  </div>
+
+</div>
+
+<script>
+  let currentTab = 'intake';
+
+  function switchTab(tab) {
+    currentTab = tab;
+    const tabs = ['intake', 'court', 'review', 'implied'];
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', tabs[i] === tab);
+    });
+    tabs.forEach(t => {
+      document.getElementById('form-' + t).style.display = t === tab ? 'block' : 'none';
+    });
+    document.getElementById('output-box').classList.remove('visible');
+    document.getElementById('output-text').textContent = '';
+  }
+
+  function togglePill(btn, hiddenId) {
+    const group = btn.closest('.pill-group');
+    group.querySelectorAll('.pill').forEach(p => { if (p !== btn) p.classList.remove('selected'); });
+    btn.classList.toggle('selected');
+    const hidden = document.getElementById(hiddenId);
+    const selected = group.querySelector('.pill.selected');
+    if (hidden) hidden.value = selected ? selected.textContent.trim() : '';
+  }
+
+  function val(id) {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  }
+
+  function fmtDate(id) {
+    const v = val(id);
+    if (!v) return '';
+    const d = new Date(v + 'T12:00:00');
+    return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+
+  function toBullets(text, fallbackCount) {
+    if (!text) return Array(fallbackCount || 4).fill('• ').join('\n');
+    return text.split('\n').filter(l => l.trim()).map(l => '• ' + l.trim()).join('\n');
+  }
+
+  function buildIntakeNote() {
+    const caller = val('i-caller') || 'PC';
+    const name = val('i-name') || '';
+    const casetype = val('i-casetype') || '';
+    const courtdate = fmtDate('i-courtdate');
+    const city = val('i-city') || '';
+    const county = val('i-county') || '';
+    const location = [city, county ? county + ' County' : ''].filter(Boolean).join(', ');
+    const details = toBullets(val('i-details'), 4);
+    const fee = val('i-fee') || '';
+    const nextsteps = toBullets(val('i-nextsteps'), 3);
+
+    let note = `__Caller:__ ${caller}${name ? ' – ' + name : ''}\n`;
+    note += `__Case:__ ${casetype}\n`;
+    if (courtdate) note += `__Court Date:__ ${courtdate}\n`;
+    if (location) note += `__Location:__ ${location}\n`;
+    note += `__Details:__\n${details}\n`;
+    if (fee) note += `__Fee Quoted:__ ${fee}\n`;
+    note += `__Next Steps:__\n${nextsteps}`;
+    return note;
+  }
+
+  function buildCourtNote() {
+    const appeared = val('c-appeared') || 'with client';
+    const appearedText = appeared.toLowerCase().includes('without') ? 'without Client' : 'with Client';
+    const hearingType = val('c-type') || '[HEARING TYPE]';
+    const offerBullets = toBullets(val('c-offer'), 4);
+    const detailBullets = toBullets(val('c-details'), 4);
+    const nextDate = fmtDate('c-next');
+    const nextType = val('c-nexttype') || '';
+    const keyPoints = val('c-keypoints') || '[INSERT KEY POINTS]';
+
+    let note = `GWM appeared ${appearedText} at the ${hearingType} hearing.\n`;
+    note += `__Judge:__ ${val('c-judge') || ''}\n`;
+    note += `__Prosecutor:__ ${val('c-prosecutor') || ''}\n`;
+    note += `__Offer:__\n${offerBullets}\n`;
+    note += `__Details__\n${detailBullets}\n`;
+    note += `__Next Court Date:__ ${nextDate}${nextType ? ' – ' + nextType : ''}\n`;
+    note += `__PMM:__ Send Client a copy of the court notice and verify accuracy in the calendar.\n`;
+    note += `\n"Thank you for taking the time to appear with me in court today. As we discussed, ${keyPoints}. I will continue working on your case and keep you updated."`;
+    return note;
+  }
+
+  function buildReviewNote() {
+    const meeting = val('r-meeting') || '[In Person / Phone / Zoom]';
+    const discussion = toBullets(val('r-discussion'), 4);
+    const offer = val('r-offer') ? toBullets(val('r-offer'), 4) : '• N/A';
+    const position = val('r-position') || '[Accepted / Rejected / Considering]';
+    const advice = toBullets(val('r-advice'), 3);
+    const decision = toBullets(val('r-decision'), 2);
+    const nextsteps = toBullets(val('r-nextsteps'), 3);
+
+    let note = `__Meeting:__ ${meeting}\n`;
+    note += `GWM met with Client to review the status of the case and discuss strategy moving forward.\n`;
+    note += `__Case Discussion:__\n${discussion}\n`;
+    note += `__Offer Relayed:__\n${offer}\n`;
+    note += `__Client Position:__ ${position}\n`;
+    note += `__GWM's Advice:__\n${advice}\n`;
+    note += `__Decision:__\n${decision}\n`;
+    note += `__Next Steps:__\n${nextsteps}`;
+    return note;
+  }
+
+  function buildImpliedNote() {
+    const appeared = val('ic-appeared') || 'with client';
+    const appearedText = appeared.toLowerCase().includes('without') ? 'without Client' : 'with Client';
+    const detailBullets = toBullets(val('ic-details'), 5);
+    const briefDate = fmtDate('ic-briefdue');
+    const pmm = val('ic-pmm') || '';
+
+    let note = `GWM appeared ${appearedText} at the Implied Consent hearing.\n`;
+    note += `__Judge:__ ${val('ic-judge') || ''}\n`;
+    note += `__Assistant Attorney General:__ ${val('ic-aag') || ''}\n`;
+    note += `__Testifying Witness:__ ${val('ic-witness') || ''}\n`;
+    note += `__Details:__\n${detailBullets}\n`;
+    note += `__Brief Due Date:__ ${briefDate}\n`;
+    note += `__PMM:__ ${pmm}`;
+    return note;
+  }
+
+  function generateNote() {
+    const btn = document.getElementById('gen-btn');
+    const box = document.getElementById('output-box');
+    const spinner = document.getElementById('spinner');
+    const outputText = document.getElementById('output-text');
+    const outputLabel = document.getElementById('output-label');
+
+    btn.disabled = true;
+    box.classList.add('visible');
+    spinner.classList.add('visible');
+    outputText.textContent = '';
+
+    const map = {
+      intake: { label: 'Intake Note', fn: buildIntakeNote },
+      court:  { label: 'Court Summary Note', fn: buildCourtNote },
+      review: { label: 'Case Review Note', fn: buildReviewNote },
+      implied:{ label: 'Implied Consent Court Summary Note', fn: buildImpliedNote },
+    };
+
+    const { label, fn } = map[currentTab];
+    outputLabel.textContent = label;
+
+    setTimeout(() => {
+      outputText.textContent = fn();
+      spinner.classList.remove('visible');
+      btn.disabled = false;
+    }, 120);
+  }
+
+  function copyNote() {
+    const text = document.getElementById('output-text').textContent;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
