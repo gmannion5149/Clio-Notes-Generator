@@ -512,12 +512,6 @@
       <input class="form-input" type="date" id="ic-briefdue" />
     </div>
     <div class="form-section">
-      <label class="form-label">PMM Note</label>
-      <p class="hint">What needs to be done / communicated after this hearing?</p>
-      <textarea class="form-textarea" id="ic-pmm" style="min-height:65px"
-        placeholder="e.g. Calendar brief due date, send client hearing summary, notify client of next steps..."></textarea>
-    </div>
-    <div class="form-section">
       <label class="form-label">Notes for PMM</label>
       <p class="hint">Added after the standard PMM line</p>
       <textarea class="form-textarea" id="ic-pmmnotes" style="min-height:65px"
@@ -736,7 +730,6 @@
     const witness     = val('ic-witness');
     const detailHTML  = bullets(val('ic-details'));
     const briefDate   = fmtDate('ic-briefdue');
-    const pmm         = val('ic-pmm');
 
     const atty = val('attorney') || 'GWM';
     let opener = `${atty} appeared ${appTxt} at the Implied Consent hearing.`;
@@ -748,7 +741,6 @@
       inline('Testifying Witness', witness),
       sec('Details', detailHTML),
       inline('Brief Due Date', briefDate),
-      inline('PMM', pmm),
       pmmnotes || keyPoints ? sec('PMM', `<div>Send Client new Court date and verify court date in the calendar. Send Client the following note:${pmmnotes ? '<br>' + esc(pmmnotes) : ''}</div><div><br><em>&ldquo;Thank you for taking the time to appear with me in court today. As we discussed, ${esc(keyPoints)}. I will continue working on your case and keep you updated.&rdquo;</em></div>`) : '',
     ].join('');
   }
