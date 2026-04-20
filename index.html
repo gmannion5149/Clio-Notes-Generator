@@ -4,276 +4,70 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GWM – Clio Note Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --bg: #ffffff;
-      --bg-secondary: #f5f5f3;
+      --bg2: #f5f5f3;
       --bg-info: #e6f1fb;
-      --border: rgba(0,0,0,0.12);
-      --border-hover: rgba(0,0,0,0.25);
-      --border-strong: rgba(0,0,0,0.4);
-      --border-success: rgba(15,110,86,0.4);
-      --text: #1a1a18;
-      --text-secondary: #5f5e5a;
-      --text-tertiary: #888780;
-      --text-info: #185fa5;
-      --text-success: #0f6e56;
-      --pill-selected-bg: #e6f1fb;
-      --pill-selected-border: rgba(24,95,165,0.35);
-      --pill-selected-text: #185fa5;
-      --radius-md: 8px;
-      --radius-lg: 12px;
-      --font-sans: 'IBM Plex Sans', sans-serif;
+      --bd: rgba(0,0,0,0.12);
+      --bd-hov: rgba(0,0,0,0.25);
+      --bd-str: rgba(0,0,0,0.4);
+      --bd-ok: rgba(15,110,86,0.4);
+      --tx: #1a1a18;
+      --tx2: #5f5e5a;
+      --tx3: #888780;
+      --tx-info: #185fa5;
+      --tx-ok: #0f6e56;
+      --p-bg: #e6f1fb;
+      --p-bd: rgba(24,95,165,0.35);
+      --p-tx: #185fa5;
+      --r: 8px;
+      --rl: 12px;
+      --f: 'IBM Plex Sans', sans-serif;
     }
-
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #1e1e1c;
-        --bg-secondary: #2a2a28;
-        --bg-info: #0c2d4a;
-        --border: rgba(255,255,255,0.1);
-        --border-hover: rgba(255,255,255,0.22);
-        --border-strong: rgba(255,255,255,0.35);
-        --border-success: rgba(93,202,165,0.3);
-        --text: #e8e6df;
-        --text-secondary: #a8a69f;
-        --text-tertiary: #6e6d69;
-        --text-info: #85b7eb;
-        --text-success: #5dcaa5;
-        --pill-selected-bg: #0c2d4a;
-        --pill-selected-border: rgba(133,183,235,0.35);
-        --pill-selected-text: #85b7eb;
+        --bg:#1e1e1c; --bg2:#2a2a28; --bg-info:#0c2d4a;
+        --bd:rgba(255,255,255,0.1); --bd-hov:rgba(255,255,255,0.22); --bd-str:rgba(255,255,255,0.35); --bd-ok:rgba(93,202,165,0.3);
+        --tx:#e8e6df; --tx2:#a8a69f; --tx3:#6e6d69; --tx-info:#85b7eb; --tx-ok:#5dcaa5;
+        --p-bg:#0c2d4a; --p-bd:rgba(133,183,235,0.35); --p-tx:#85b7eb;
       }
     }
 
-    body {
-      font-family: var(--font-sans);
-      background: var(--bg-secondary);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 2rem 1rem 4rem;
-    }
+    body { font-family:var(--f); background:var(--bg2); color:var(--tx); min-height:100vh; padding:2rem 1rem 4rem; }
 
-    .app {
-      max-width: 700px;
-      margin: 0 auto;
-      background: var(--bg);
-      border-radius: var(--radius-lg);
-      border: 0.5px solid var(--border);
-      padding: 2rem 1.75rem 2.5rem;
-    }
+    .app { max-width:700px; margin:0 auto; background:var(--bg); border-radius:var(--rl); border:.5px solid var(--bd); padding:2rem 1.75rem 2.5rem; }
 
-    .header {
-      display: flex; align-items: center; gap: 12px;
-      margin-bottom: 1.75rem; padding-bottom: 1.25rem;
-      border-bottom: 0.5px solid var(--border);
-    }
+    .hdr { display:flex; align-items:center; gap:12px; margin-bottom:1.75rem; padding-bottom:1.25rem; border-bottom:.5px solid var(--bd); }
+    .hdr-ico { width:36px; height:36px; background:var(--bg-info); border-radius:var(--r); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+    .hdr-ico svg { width:18px; height:18px; stroke:var(--tx-info); }
+    .hdr h1 { font-size:16px; font-weight:500; letter-spacing:-.01em; }
+    .hdr p  { font-size:12px; color:var(--tx2); margin-top:2px; }
 
-    .header-icon {
-      width: 36px; height: 36px; background: var(--bg-info);
-      border-radius: var(--radius-md);
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
-
-    .header-icon svg { width: 18px; height: 18px; stroke: var(--text-info); }
-
-    .header-text h1 { font-size: 16px; font-weight: 500; color: var(--text); letter-spacing: -0.01em; }
-    .header-text p  { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
-
-    .tabs {
-      display: grid; grid-template-columns: repeat(3, 1fr);
-      gap: 6px; margin-bottom: 1.75rem;
-    }
-
+    .tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:1.75rem; }
     .tab {
-      background: var(--bg-secondary); border: 0.5px solid var(--border);
-      border-radius: var(--radius-md); padding: 9px 6px;
-      font-family: var(--font-sans); font-size: 11.5px; font-weight: 400;
-      color: var(--text-secondary); cursor: pointer; text-align: center;
-      line-height: 1.3; transition: all 0.15s;
+      background:var(--bg2); border:.5px solid var(--bd); border-radius:var(--r);
+      padding:9px 6px; font-family:var(--f); font-size:11.5px; font-weight:400;
+      color:var(--tx2); cursor:pointer; text-align:center; line-height:1.3; transition:all .15s;
     }
+    .tab:hover { color:var(--tx); border-color:var(--bd-hov); }
+    .tab.active { background:var(--bg); border-color:var(--bd-str); color:var(--tx); font-weight:500; }
 
-    .tab:hover { color: var(--text); border-color: var(--border-hover); }
-    .tab.active { background: var(--bg); border-color: var(--border-strong); color: var(--text); font-weight: 500; }
+    .fs { margin-bottom:1.35rem; }
+    .fl { display:block; font-size:11px; font-weight:500; color:var(--tx2); text-transform:uppercase; letter-spacing:.07em; margin-bottom:7px; }
+    .hint { font-size:12px; color:var(--tx3); margin-top:4px; font-style:italic; }
+    .sub  { font-size:12px; font-weight:500; color:var(--tx2); margin-bottom:6px; }
 
-    .form-section { margin-bottom: 1.35rem; }
-
-    .form-label {
-      display: block; font-size: 11px; font-weight: 500;
-      color: var(--text-secondary); text-transform: uppercase;
-      letter-spacing: 0.07em; margin-bottom: 7px;
+    input.fi, textarea.ft {
+      width:100%; background:var(--bg); border:.5px solid var(--bd); border-radius:var(--r);
+      padding:10px 13px; font-family:var(--f); font-size:14px; color:var(--tx);
+      outline:none; transition:border-color .15s;
     }
+    input.fi:focus, textarea.ft:focus { border-color:var(--bd-str); }
+    textarea.ft { resize:vertical; min-height:75px; line-height:1.55; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 
-    .hint { font-size: 12px; color: var(--text-tertiary); margin-top: 4px; font-style: italic; }
-
-    .form-input, .form-textarea {
-      width: 100%; background: var(--bg); border: 0.5px solid var(--border);
-      border-radius: var(--radius-md); padding: 10px 13px;
-      font-family: var(--font-sans); font-size: 14px; color: var(--text);
-      outline: none; transition: border-color 0.15s;
-    }
-
-    .form-input:focus, .form-textarea:focus { border-color: var(--border-strong); }
-    .form-textarea { resize: vertical; min-height: 75px; line-height: 1.55; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-    .pill-group { display: flex; flex-wrap: wrap; gap: 6px; }
-
-    .pill {
-      background: var(--bg-secondary); border: 0.5px solid var(--border);
-      border-radius: 20px; padding: 5px 13px;
-      font-family: var(--font-sans); font-size: 13px;
-      color: var(--text-secondary); cursor: pointer; transition: all 0.12s;
-    }
-
-    .pill:hover { border-color: var(--border-hover); color: var(--text); }
-    .pill.selected {
-      background: var(--pill-selected-bg); border-color: var(--pill-selected-border);
-      color: var(--pill-selected-text); font-weight: 500;
-    }
-
-    .generate-btn {
-      width: 100%; background: var(--text); color: var(--bg);
-      border: none; border-radius: var(--radius-md); padding: 12px;
-      font-family: var(--font-sans); font-size: 14px; font-weight: 500;
-      cursor: pointer; margin-top: 0.75rem; transition: opacity 0.15s;
-    }
-
-    .generate-btn:hover { opacity: 0.82; }
-    .generate-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-
-    .output-box {
-      display: none; margin-top: 1.75rem;
-      border: 0.5px solid var(--border);
-      border-radius: var(--radius-md); overflow: hidden;
-    }
-
-    .output-box.visible { display: block; }
-
-    .output-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 14px; background: var(--bg-secondary);
-      border-bottom: 0.5px solid var(--border);
-    }
-
-    .output-label {
-      font-size: 11px; font-weight: 500; color: var(--text-secondary);
-      text-transform: uppercase; letter-spacing: 0.07em;
-    }
-
-    .copy-btn {
-      background: none; border: 0.5px solid var(--border);
-      border-radius: 6px; padding: 4px 11px;
-      font-family: var(--font-sans); font-size: 12px;
-      color: var(--text-secondary); cursor: pointer; transition: all 0.12s;
-    }
-
-    .copy-btn:hover { border-color: var(--border-hover); color: var(--text); }
-    .copy-btn.copied { color: var(--text-success); border-color: var(--border-success); }
-
-    .output-text {
-      padding: 18px 20px;
-      font-family: var(--font-sans);
-      font-size: 13.5px;
-      color: var(--text);
-      line-height: 1.8;
-    }
-
-    .output-text .blk { margin-bottom: 12px; }
-    .output-text .blk:last-child { margin-bottom: 0; }
-
-    .spinner {
-      display: none; align-items: center; gap: 8px;
-      padding: 16px; color: var(--text-secondary); font-size: 13px;
-    }
-
-    .spinner.visible { display: flex; }
-
-    .dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--text-tertiary);
-      animation: pulse 1.2s ease-in-out infinite;
-    }
-
-    .dot:nth-child(2) { animation-delay: 0.2s; }
-    .dot:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.3; transform: scale(0.8); }
-      50%       { opacity: 1;   transform: scale(1); }
-    }
-
-    @media (max-width: 520px) {
-      .app { padding: 1.25rem 1rem 2rem; }
-      .tabs { grid-template-columns: repeat(3, 1fr); }
-      .form-row { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
-<div class="app">
-
-  <div class="header">
-    <div class="header-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <line x1="16" y1="13" x2="8" y2="13"/>
-        <line x1="16" y1="17" x2="8" y2="17"/>
-        <polyline points="10 9 9 9 8 9"/>
-      </svg>
-    </div>
-    <div class="header-text">
-      <h1>GWM – Clio Note Generator</h1>
-      <p>Select a note type, fill in the details, generate and copy</p>
-    </div>
-  </div>
-
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('intake')">Intake Note</button>
-    <button class="tab" onclick="switchTab('court')">Court Summary</button>
-    <button class="tab" onclick="switchTab('review')">Case Review</button>
-  </div>
-
-  <!-- ── ORIGINATED BY (intake tab only) ── -->
-  <div class="form-section" id="originated-section" style="margin-bottom:1.5rem;">
-    <label class="form-label">Originated By</label>
-    <div class="pill-group">
-      <button class="pill" onclick="togglePill(this,'i-originated')">GAM</button>
-      <button class="pill" onclick="togglePill(this,'i-originated')">KJD</button>
-      <button class="pill" onclick="togglePill(this,'i-originated')">BDH</button>
-      <button class="pill" onclick="togglePill(this,'i-originated')">ANB</button>
-      <button class="pill" onclick="togglePill(this,'i-originated')">GWM</button>
-    </div>
-    <input type="hidden" id="i-originated" />
-  </div>
-
-  <!-- ── ATTORNEY (global, label changes per tab) ── -->
-  <div class="form-section" style="margin-bottom:1.5rem;">
-    <label class="form-label" id="attorney-label">Assigned Attorney</label>
-    <div class="pill-group">
-      <button class="pill" onclick="togglePill(this,'attorney')">KJD</button>
-      <button class="pill" onclick="togglePill(this,'attorney')">ANB</button>
-      <button class="pill" onclick="togglePill(this,'attorney')">BDH</button>
-      <button class="pill selected" onclick="togglePill(this,'attorney')">GWM</button>
-    </div>
-    <input type="hidden" id="attorney" value="GWM" />
-  </div>
-
-  <!-- ── INTAKE ── -->
-  <div id="form-intake">
-    <div class="form-section">
-      <label class="form-label">Caller</label>
-      <div class="pill-group">
-        <button class="pill" onclick="togglePill(this,'i-caller')">PC</button>
-        <button class="pill" onclick="togglePill(this,'i-caller')">PC Family</button>
-        <button class="pill" onclick="togglePill(this,'i-caller')">PC Friend</button>
-      </div>
-      <input type="hidden" id="i-caller" />
-    </div>
-    <div class="form-section">
-      <label class="form-label">PC Name</label>
-      <input class="form-input" id="i-name" placeholder="First Last" />
+    .pg { display:flex; flex-wrap:wrap; gap:6px; }
