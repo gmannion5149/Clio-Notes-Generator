@@ -84,7 +84,7 @@
     .header-text p  { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
 
     .tabs {
-      display: grid; grid-template-columns: repeat(4, 1fr);
+      display: grid; grid-template-columns: repeat(3, 1fr);
       gap: 6px; margin-bottom: 1.75rem;
     }
 
@@ -208,7 +208,7 @@
 
     @media (max-width: 520px) {
       .app { padding: 1.25rem 1rem 2rem; }
-      .tabs { grid-template-columns: repeat(2, 1fr); }
+      .tabs { grid-template-columns: repeat(3, 1fr); }
       .form-row { grid-template-columns: 1fr; }
     }
   </style>
@@ -265,7 +265,6 @@
 
   <!-- ── INTAKE ── -->
   <div id="form-intake">
-
     <div class="form-section">
       <label class="form-label">Caller</label>
       <div class="pill-group">
@@ -278,62 +277,3 @@
     <div class="form-section">
       <label class="form-label">PC Name</label>
       <input class="form-input" id="i-name" placeholder="First Last" />
-    </div>
-    <div class="form-section">
-      <label class="form-label">Charge / Case Type</label>
-      <p class="hint" style="margin-bottom:8px;">Select any combination — all fields optional</p>
-      <p class="hint" style="margin-bottom:6px;font-weight:500;font-style:normal;color:var(--text-secondary);">Degree</p>
-      <div class="pill-group" id="charge-degree" style="margin-bottom:10px;">
-        <button class="pill multi" onclick="toggleMulti(this,'i-degree')">1st Degree</button>
-        <button class="pill multi" onclick="toggleMulti(this,'i-degree')">2nd Degree</button>
-        <button class="pill multi" onclick="toggleMulti(this,'i-degree')">3rd Degree</button>
-        <button class="pill multi" onclick="toggleMulti(this,'i-degree')">4th Degree</button>
-        <button class="pill multi" onclick="toggleMulti(this,'i-degree')">5th Degree</button>
-      </div>
-      <p class="hint" style="margin-bottom:6px;font-weight:500;font-style:normal;color:var(--text-secondary);">Severity</p>
-      <div class="pill-group" id="charge-severity" style="margin-bottom:10px;">
-        <button class="pill multi" onclick="toggleMulti(this,'i-severity')">Petty Misdemeanor</button>
-        <button class="pill multi" onclick="toggleMulti(this,'i-severity')">Misdemeanor</button>
-        <button class="pill multi" onclick="toggleMulti(this,'i-severity')">Gross Misdemeanor</button>
-        <button class="pill multi" onclick="toggleMulti(this,'i-severity')">Felony</button>
-      </div>
-      <p class="hint" style="margin-bottom:6px;font-weight:500;font-style:normal;color:var(--text-secondary);">Offense Type</p>
-      <div class="pill-group" id="charge-offense" style="margin-bottom:10px;">
-        <button class="pill multi" onclick="toggleMulti(this,'i-offense')">DWI</button>
-        <button class="pill multi" onclick="toggleMulti(this,'i-offense')">DWI – Test Refusal</button>
-        <button class="pill multi" onclick="toggleMulti(this,'i-offense')">Assault</button>
-        <button class="pill multi" onclick="toggleMulti(this,'i-offense')">Domestic Assault</button>
-        <button class="pill multi" onclick="toggleMulti(this,'i-offense')">Theft</button>
-        <button class="pill multi" onclick="toggleMulti(this,'i-offense')">Drug Possession</button>
-        <button class="pill multi" onclick="toggleMulti(this,'i-offense')">Other</button>
-      </div>
-      <input class="form-input" id="i-casetype" placeholder="Or type charge manually (overrides selections above)" />
-    </div>
-    <div class="form-section">
-      <label class="form-label">Court File Number</label>
-      <input class="form-input" id="i-filenum" placeholder="e.g. 27-CR-25-12345" />
-    </div>
-    <div class="form-section">
-      <div class="form-row">
-        <div>
-          <label class="form-label">Offense Date</label>
-          <input class="form-input" type="date" id="i-offensedate" />
-        </div>
-        <div>
-          <label class="form-label">Court Date</label>
-          <input class="form-input" type="date" id="i-courtdate" />
-        </div>
-      </div>
-    </div>
-    <div class="form-section">
-      <div class="form-row">
-        <div>
-          <label class="form-label">City</label>
-          <input class="form-input" id="i-city" placeholder="e.g. Minneapolis" />
-        </div>
-        <div>
-          <label class="form-label">County</label>
-          <input class="form-input" id="i-county" placeholder="e.g. Hennepin" />
-        </div>
-      </div>
-    </div>
