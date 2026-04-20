@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0062)file:///C:/Users/Tory/Downloads/GWM_Clio_Note_Generator_6.html -->
+<!-- saved from url=(0062)file:///C:/Users/Tory/Downloads/GWM_Clio_Note_Generator_7.html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -127,13 +127,13 @@
   </div>
 
   <div class="tabs">
-    <button class="tab active" id="tab-intake" onclick="switchTab(&#39;intake&#39;)">Intake Note</button>
-    <button class="tab" id="tab-court" onclick="switchTab(&#39;court&#39;)">Court Summary</button>
+    <button class="tab" id="tab-intake" onclick="switchTab(&#39;intake&#39;)">Intake Note</button>
+    <button class="tab active" id="tab-court" onclick="switchTab(&#39;court&#39;)">Court Summary</button>
     <button class="tab" id="tab-review" onclick="switchTab(&#39;review&#39;)">Case Review</button>
   </div>
 
   <!-- Originated By — intake only -->
-  <div class="fs" id="sec-orig">
+  <div class="fs" id="sec-orig" style="display: none;">
     <label class="fl">Originated By</label>
     <div class="pg" id="pg-orig">
       <button class="pill" onclick="solo(this,&#39;pg-orig&#39;,&#39;v-orig&#39;)">GAM</button>
@@ -147,7 +147,7 @@
 
   <!-- Attorney — always visible -->
   <div class="fs">
-    <label class="fl" id="lbl-atty">Assigned Attorney</label>
+    <label class="fl" id="lbl-atty">Attorney</label>
     <div class="pg" id="pg-atty">
       <button class="pill" onclick="solo(this,&#39;pg-atty&#39;,&#39;v-atty&#39;)">KJD</button>
       <button class="pill" onclick="solo(this,&#39;pg-atty&#39;,&#39;v-atty&#39;)">ANB</button>
@@ -158,7 +158,7 @@
   </div>
 
   <!-- ═══ INTAKE ═══ -->
-  <div id="form-intake">
+  <div id="form-intake" style="display: none;">
     <div class="fs">
       <label class="fl">Caller</label>
       <div class="pg" id="pg-caller">
@@ -242,7 +242,7 @@ Follow up Friday if no response"></textarea>
   </div>
 
   <!-- ═══ COURT SUMMARY ═══ -->
-  <div id="form-court" style="display:none">
+  <div id="form-court" style="display: block;">
     <div class="fs">
       <label class="fl">Hearing Date</label>
       <input class="fi" type="date" id="c-date">
@@ -258,20 +258,22 @@ Follow up Friday if no response"></textarea>
     <div class="fs">
       <label class="fl">Hearing Type</label>
       <div class="pg" id="pg-htype">
-        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">First Appearance</button>
-        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Bail Hearing</button>
         <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Arraignment</button>
-        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Omnibus</button>
-        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Pretrial</button>
-        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Plea</button>
-        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Sentencing</button>
-        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Trial</button>
-        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Settlement Conference</button>
-        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Trial Management Conference</button>
-        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Implied Consent Scheduling Conference</button>
-        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Implied Consent Evidentiary Hearing</button>
-        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Rule 20 Review Hearing</button>
+        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Bail Hearing</button>
+        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Contested Omnibus Hearing</button>
+        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Contested Pretrial Hearing</button>
+        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">First Appearance</button>
         <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Hearing</button>
+        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Implied Consent Evidentiary Hearing</button>
+        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Implied Consent Scheduling Conference</button>
+        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Omnibus</button>
+        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Plea</button>
+        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Pretrial</button>
+        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Rule 20 Review Hearing</button>
+        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Sentencing</button>
+        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Settlement Conference</button>
+        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Trial</button>
+        <button class="pill" onclick="solo(this,&#39;pg-htype&#39;,&#39;v-htype&#39;)">Trial Management Conference</button>
       </div>
       <input type="hidden" id="v-htype" value="">
     </div>
