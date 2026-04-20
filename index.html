@@ -1,3 +1,6 @@
+---
+layout: null
+---
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,3 +74,461 @@
     .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 
     .pg { display:flex; flex-wrap:wrap; gap:6px; }
+    .pill {
+      background:var(--bg2); border:.5px solid var(--bd); border-radius:20px;
+      padding:5px 13px; font-family:var(--f); font-size:13px;
+      color:var(--tx2); cursor:pointer; transition:all .12s; user-select:none;
+    }
+    .pill:hover { border-color:var(--bd-hov); color:var(--tx); }
+    .pill.on { background:var(--p-bg); border-color:var(--p-bd); color:var(--p-tx); font-weight:500; }
+
+    .gen-btn {
+      width:100%; background:var(--tx); color:var(--bg); border:none; border-radius:var(--r);
+      padding:12px; font-family:var(--f); font-size:14px; font-weight:500;
+      cursor:pointer; margin-top:.75rem; transition:opacity .15s;
+    }
+    .gen-btn:hover { opacity:.82; }
+    .gen-btn:disabled { opacity:.35; cursor:not-allowed; }
+
+    .out-box { display:none; margin-top:1.75rem; border:.5px solid var(--bd); border-radius:var(--r); overflow:hidden; }
+    .out-box.show { display:block; }
+    .out-hdr { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--bg2); border-bottom:.5px solid var(--bd); }
+    .out-lbl { font-size:11px; font-weight:500; color:var(--tx2); text-transform:uppercase; letter-spacing:.07em; }
+    .copy-btn { background:none; border:.5px solid var(--bd); border-radius:6px; padding:4px 11px; font-family:var(--f); font-size:12px; color:var(--tx2); cursor:pointer; transition:all .12s; }
+    .copy-btn:hover { border-color:var(--bd-hov); color:var(--tx); }
+    .copy-btn.done { color:var(--tx-ok); border-color:var(--bd-ok); }
+    .out-text { padding:18px 20px; font-family:var(--f); font-size:13.5px; color:var(--tx); line-height:1.8; }
+    .out-text .blk { margin-bottom:12px; }
+    .out-text .blk:last-child { margin-bottom:0; }
+
+    .spin { display:none; align-items:center; gap:8px; padding:16px; color:var(--tx2); font-size:13px; }
+    .spin.show { display:flex; }
+    .dot { width:6px; height:6px; border-radius:50%; background:var(--tx3); animation:pulse 1.2s ease-in-out infinite; }
+    .dot:nth-child(2){animation-delay:.2s} .dot:nth-child(3){animation-delay:.4s}
+    @keyframes pulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+
+    @media(max-width:520px){ .app{padding:1.25rem 1rem 2rem} .row{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="hdr">
+    <div class="hdr-ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+        <polyline points="10 9 9 9 8 9"/>
+      </svg>
+    </div>
+    <div>
+      <h1>GWM – Clio Note Generator</h1>
+      <p>Select a note type, fill in the details, generate and copy</p>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-intake"  onclick="switchTab('intake')">Intake Note</button>
+    <button class="tab"        id="tab-court"   onclick="switchTab('court')">Court Summary</button>
+    <button class="tab"        id="tab-review"  onclick="switchTab('review')">Case Review</button>
+  </div>
+
+  <div class="fs" id="sec-orig">
+    <label class="fl">Originated By</label>
+    <div class="pg" id="pg-orig">
+      <button class="pill" onclick="solo(this,'pg-orig','v-orig')">GAM</button>
+      <button class="pill" onclick="solo(this,'pg-orig','v-orig')">KJD</button>
+      <button class="pill" onclick="solo(this,'pg-orig','v-orig')">BDH</button>
+      <button class="pill" onclick="solo(this,'pg-orig','v-orig')">ANB</button>
+      <button class="pill" onclick="solo(this,'pg-orig','v-orig')">GWM</button>
+    </div>
+    <input type="hidden" id="v-orig" value="" />
+  </div>
+
+  <div class="fs">
+    <label class="fl" id="lbl-atty">Assigned Attorney</label>
+    <div class="pg" id="pg-atty">
+      <button class="pill"    onclick="solo(this,'pg-atty','v-atty')">KJD</button>
+      <button class="pill"    onclick="solo(this,'pg-atty','v-atty')">ANB</button>
+      <button class="pill"    onclick="solo(this,'pg-atty','v-atty')">BDH</button>
+      <button class="pill on" onclick="solo(this,'pg-atty','v-atty')">GWM</button>
+    </div>
+    <input type="hidden" id="v-atty" value="GWM" />
+  </div>
+
+  <!-- INTAKE -->
+  <div id="form-intake">
+    <div class="fs">
+      <label class="fl">Caller</label>
+      <div class="pg" id="pg-caller">
+        <button class="pill" onclick="solo(this,'pg-caller','v-caller')">PC</button>
+        <button class="pill" onclick="solo(this,'pg-caller','v-caller')">PC Family</button>
+        <button class="pill" onclick="solo(this,'pg-caller','v-caller')">PC Friend</button>
+      </div>
+      <input type="hidden" id="v-caller" value="" />
+    </div>
+    <div class="fs">
+      <label class="fl">PC Name</label>
+      <input class="fi" id="i-name" placeholder="First Last" />
+    </div>
+    <div class="fs">
+      <label class="fl">Charge / Case Type</label>
+      <p class="hint" style="margin-bottom:8px;">Select any combination — all fields optional</p>
+      <p class="sub">Degree</p>
+      <div class="pg" id="pg-deg" style="margin-bottom:10px;">
+        <button class="pill" onclick="multi(this)">1st Degree</button>
+        <button class="pill" onclick="multi(this)">2nd Degree</button>
+        <button class="pill" onclick="multi(this)">3rd Degree</button>
+        <button class="pill" onclick="multi(this)">4th Degree</button>
+        <button class="pill" onclick="multi(this)">5th Degree</button>
+      </div>
+      <p class="sub">Severity</p>
+      <div class="pg" id="pg-sev" style="margin-bottom:10px;">
+        <button class="pill" onclick="multi(this)">Petty Misdemeanor</button>
+        <button class="pill" onclick="multi(this)">Misdemeanor</button>
+        <button class="pill" onclick="multi(this)">Gross Misdemeanor</button>
+        <button class="pill" onclick="multi(this)">Felony</button>
+      </div>
+      <p class="sub">Offense Type</p>
+      <div class="pg" id="pg-off" style="margin-bottom:10px;">
+        <button class="pill" onclick="multi(this)">DWI</button>
+        <button class="pill" onclick="multi(this)">DWI – Test Refusal</button>
+        <button class="pill" onclick="multi(this)">Assault</button>
+        <button class="pill" onclick="multi(this)">Domestic Assault</button>
+        <button class="pill" onclick="multi(this)">Theft</button>
+        <button class="pill" onclick="multi(this)">Drug Possession</button>
+        <button class="pill" onclick="multi(this)">Other</button>
+      </div>
+      <input class="fi" id="i-casetype" placeholder="Or type charge manually (overrides selections above)" />
+    </div>
+    <div class="fs">
+      <label class="fl">Court File Number</label>
+      <input class="fi" id="i-filenum" placeholder="e.g. 27-CR-25-12345" />
+    </div>
+    <div class="fs">
+      <div class="row">
+        <div><label class="fl">Offense Date</label><input class="fi" type="date" id="i-odate" /></div>
+        <div><label class="fl">Court Date</label><input class="fi" type="date" id="i-cdate" /></div>
+      </div>
+    </div>
+    <div class="fs">
+      <div class="row">
+        <div><label class="fl">City</label><input class="fi" id="i-city" placeholder="e.g. Minneapolis" /></div>
+        <div><label class="fl">County</label><input class="fi" id="i-county" placeholder="e.g. Hennepin" /></div>
+      </div>
+    </div>
+    <div class="fs">
+      <label class="fl">Details</label>
+      <p class="hint">Enter each detail on its own line</p>
+      <textarea class="ft" id="i-details" style="min-height:100px" placeholder="e.g.&#10;PC arrested after traffic stop on I-394&#10;Submitted to breath test, result 0.14&#10;No prior DWI record&#10;Currently holds CDL"></textarea>
+    </div>
+    <div class="fs">
+      <label class="fl">Fee Quoted</label>
+      <input class="fi" id="i-fee" placeholder="e.g. $3,500 flat fee" />
+    </div>
+    <div class="fs">
+      <label class="fl">Next Steps</label>
+      <p class="hint">Enter each step on its own line</p>
+      <textarea class="ft" id="i-steps" style="min-height:75px" placeholder="e.g.&#10;Send retainer agreement&#10;PC to call back with decision&#10;Follow up Friday if no response"></textarea>
+    </div>
+  </div>
+
+  <!-- COURT SUMMARY -->
+  <div id="form-court" style="display:none">
+    <div class="fs">
+      <label class="fl">Hearing Date</label>
+      <input class="fi" type="date" id="c-date" />
+    </div>
+    <div class="fs">
+      <label class="fl">Client Appeared?</label>
+      <div class="pg" id="pg-app">
+        <button class="pill" onclick="solo(this,'pg-app','v-app')">With client</button>
+        <button class="pill" onclick="solo(this,'pg-app','v-app')">Without client</button>
+      </div>
+      <input type="hidden" id="v-app" value="" />
+    </div>
+    <div class="fs">
+      <label class="fl">Hearing Type</label>
+      <div class="pg" id="pg-htype">
+        <button class="pill" onclick="solo(this,'pg-htype','v-htype')">First Appearance</button>
+        <button class="pill" onclick="solo(this,'pg-htype','v-htype')">Bail Hearing</button>
+        <button class="pill" onclick="solo(this,'pg-htype','v-htype')">Arraignment</button>
+        <button class="pill" onclick="solo(this,'pg-htype','v-htype')">Omnibus</button>
+        <button class="pill" onclick="solo(this,'pg-htype','v-htype')">Pretrial</button>
+        <button class="pill" onclick="solo(this,'pg-htype','v-htype')">Plea</button>
+        <button class="pill" onclick="solo(this,'pg-htype','v-htype')">Sentencing</button>
+        <button class="pill" onclick="solo(this,'pg-htype','v-htype')">Trial</button>
+        <button class="pill" onclick="solo(this,'pg-htype','v-htype')">Settlement Conference</button>
+        <button class="pill" onclick="solo(this,'pg-htype','v-htype')">Trial Management Conference</button>
+        <button class="pill" onclick="solo(this,'pg-htype','v-htype')">Implied Consent Scheduling Conference</button>
+        <button class="pill" onclick="solo(this,'pg-htype','v-htype')">Implied Consent Evidentiary Hearing</button>
+        <button class="pill" onclick="solo(this,'pg-htype','v-htype')">Rule 20 Review Hearing</button>
+        <button class="pill" onclick="solo(this,'pg-htype','v-htype')">Hearing</button>
+      </div>
+      <input type="hidden" id="v-htype" value="" />
+    </div>
+    <div class="fs">
+      <div class="row">
+        <div><label class="fl">Judge</label><input class="fi" id="c-judge" placeholder="Hon. Smith" /></div>
+        <div><label class="fl">Prosecutor</label><input class="fi" id="c-pros" placeholder="ACA Jane Doe" /></div>
+      </div>
+    </div>
+    <div class="fs">
+      <label class="fl">Assistant Attorney General</label>
+      <input class="fi" id="c-aag" placeholder="AAG Jane Doe" />
+    </div>
+    <div class="fs">
+      <label class="fl">Testifying Witness</label>
+      <input class="fi" id="c-witness" placeholder="e.g. Deputy John Anderson, Hennepin County Sheriff" />
+    </div>
+    <div class="fs">
+      <label class="fl">Offer</label>
+      <p class="hint">Enter each offer point on its own line</p>
+      <textarea class="ft" id="c-offer" style="min-height:90px" placeholder="e.g.&#10;Plead to 4th degree DWI&#10;Stay of imposition&#10;$900 fine + surcharges&#10;1 year probation"></textarea>
+    </div>
+    <div class="fs">
+      <label class="fl">Details</label>
+      <p class="hint">Enter each detail on its own line</p>
+      <textarea class="ft" id="c-details" style="min-height:90px" placeholder="e.g.&#10;State not ready on motions&#10;Body cam ordered and received&#10;Client cooperative in court"></textarea>
+    </div>
+    <div class="fs">
+      <div class="row">
+        <div><label class="fl">Next Court Date</label><input class="fi" type="date" id="c-nextdate" /></div>
+        <div><label class="fl">Next Hearing Type</label><input class="fi" id="c-nexttype" placeholder="e.g. Sentencing" /></div>
+      </div>
+    </div>
+    <div class="fs">
+      <label class="fl">Brief Due Date</label>
+      <input class="fi" type="date" id="c-brief" />
+    </div>
+    <div class="fs">
+      <label class="fl">Notes for PMM</label>
+      <textarea class="ft" id="c-pmm" style="min-height:65px" placeholder="e.g. Call client to discuss offer, file motion by Friday..."></textarea>
+    </div>
+    <div class="fs">
+      <label class="fl">Key Points for Client Email</label>
+      <textarea class="ft" id="c-kp" style="min-height:65px" placeholder="e.g. we entered a not guilty plea, your next court date is May 15..."></textarea>
+    </div>
+  </div>
+
+  <!-- CASE REVIEW -->
+  <div id="form-review" style="display:none">
+    <div class="fs">
+      <label class="fl">Meeting Type</label>
+      <div class="pg" id="pg-meet">
+        <button class="pill" onclick="solo(this,'pg-meet','v-meet')">In Person</button>
+        <button class="pill" onclick="solo(this,'pg-meet','v-meet')">Phone</button>
+        <button class="pill" onclick="solo(this,'pg-meet','v-meet')">Zoom</button>
+      </div>
+      <input type="hidden" id="v-meet" value="" />
+    </div>
+    <div class="fs">
+      <label class="fl">Case Discussion Points</label>
+      <p class="hint">Enter each point on its own line</p>
+      <textarea class="ft" id="r-disc" style="min-height:100px" placeholder="e.g.&#10;Reviewed body cam footage with client&#10;Discussed strength of stop&#10;Explained physical control standard under Starfield"></textarea>
+    </div>
+    <div class="fs">
+      <label class="fl">Offer Relayed</label>
+      <p class="hint">Enter each term on its own line (leave blank if no offer)</p>
+      <textarea class="ft" id="r-offer" style="min-height:90px" placeholder="e.g.&#10;Plead to 4th Degree DWI&#10;Stay of imposition&#10;$900 fine + surcharges&#10;1 year probation"></textarea>
+    </div>
+    <div class="fs">
+      <label class="fl">Client Position on Offer</label>
+      <div class="pg" id="pg-pos">
+        <button class="pill" onclick="solo(this,'pg-pos','v-pos')">Accepted</button>
+        <button class="pill" onclick="solo(this,'pg-pos','v-pos')">Rejected</button>
+        <button class="pill" onclick="solo(this,'pg-pos','v-pos')">Considering</button>
+      </div>
+      <input type="hidden" id="v-pos" value="" />
+    </div>
+    <div class="fs">
+      <label class="fl">Attorney's Advice</label>
+      <p class="hint">Enter each point on its own line</p>
+      <textarea class="ft" id="r-advice" style="min-height:90px" placeholder="e.g.&#10;Advised client offer is reasonable given prior record&#10;Explained trial risks and sentencing exposure"></textarea>
+    </div>
+    <div class="fs">
+      <label class="fl">Decision</label>
+      <p class="hint">Enter each point on its own line</p>
+      <textarea class="ft" id="r-dec" style="min-height:75px" placeholder="e.g.&#10;Client decided to accept the offer&#10;Plea to be entered at next court date"></textarea>
+    </div>
+    <div class="fs">
+      <label class="fl">Next Steps</label>
+      <p class="hint">Enter each step on its own line</p>
+      <textarea class="ft" id="r-steps" style="min-height:75px" placeholder="e.g.&#10;Contact ACA to confirm offer in writing&#10;Schedule plea hearing&#10;Send client summary email"></textarea>
+    </div>
+  </div>
+
+  <button class="gen-btn" id="gen-btn" onclick="generate()">Generate Clio Note</button>
+
+  <div class="out-box" id="out-box">
+    <div class="out-hdr">
+      <span class="out-lbl" id="out-lbl">Note</span>
+      <button class="copy-btn" id="copy-btn" onclick="copyNote()">Copy</button>
+    </div>
+    <div class="spin" id="spin">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <span>Building note...</span>
+    </div>
+    <div class="out-text" id="out-text"></div>
+  </div>
+
+</div>
+<script>
+  var TAB = 'intake';
+  var HTML = '';
+
+  function switchTab(t) {
+    TAB = t;
+    ['intake','court','review'].forEach(function(x) {
+      document.getElementById('tab-' + x).classList.toggle('active', x === t);
+      document.getElementById('form-' + x).style.display = x === t ? 'block' : 'none';
+    });
+    document.getElementById('sec-orig').style.display = t === 'intake' ? 'block' : 'none';
+    document.getElementById('lbl-atty').textContent = t === 'intake' ? 'Assigned Attorney' : 'Attorney';
+    document.getElementById('out-box').classList.remove('show');
+    document.getElementById('out-text').innerHTML = '';
+    HTML = '';
+  }
+
+  function solo(btn, pgId, vId) {
+    var grp = document.getElementById(pgId);
+    var wasOn = btn.classList.contains('on');
+    grp.querySelectorAll('.pill').forEach(function(p){ p.classList.remove('on'); });
+    if (!wasOn) btn.classList.add('on');
+    var sel = grp.querySelector('.pill.on');
+    var h = document.getElementById(vId);
+    if (h) h.value = sel ? sel.textContent.trim() : '';
+  }
+
+  function multi(btn) { btn.classList.toggle('on'); }
+
+  function g(id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; }
+
+  function fd(id) {
+    var v = g(id); if (!v) return '';
+    return new Date(v + 'T12:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  }
+
+  function fee(raw) {
+    if (!raw) return '';
+    var n = parseFloat(raw.replace(/[^0-9.]/g,''));
+    return isNaN(n) ? raw : '$' + n.toLocaleString('en-US',{minimumFractionDigits:0});
+  }
+
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function bul(id) {
+    var t = g(id); if (!t) return '';
+    return t.split('\n').filter(function(l){return l.trim();})
+      .map(function(l){return '<div>&bull;&nbsp;'+esc(l.trim())+'</div>';}).join('');
+  }
+
+  function charge() {
+    var m = g('i-casetype'); if (m) return m;
+    var d = Array.from(document.querySelectorAll('#pg-deg .pill.on')).map(function(p){return p.textContent.trim();});
+    var s = Array.from(document.querySelectorAll('#pg-sev .pill.on')).map(function(p){return p.textContent.trim();});
+    var o = Array.from(document.querySelectorAll('#pg-off .pill.on')).map(function(p){return p.textContent.trim();});
+    return d.concat(s).concat(o).join(' ');
+  }
+
+  function H(lbl) { return '<strong><u>'+esc(lbl)+':</u></strong>'; }
+  function inl(lbl,val) { if(!val) return ''; return '<div class="blk"><div>'+H(lbl)+'&nbsp;'+esc(val)+'</div></div>'; }
+  function sec(lbl,con) { if(!con) return ''; return '<div class="blk"><div>'+H(lbl)+'</div>'+con+'</div>'; }
+  function pln(t) { if(!t) return ''; return '<div class="blk"><div>'+esc(t)+'</div></div>'; }
+
+  function buildIntake() {
+    var caller = g('v-caller') || 'PC';
+    var ct = charge() || 'the above-referenced matter';
+    var opener = caller === 'PC Family' ? "PC's family called regarding PC's "+ct+" case."
+               : caller === 'PC Friend' ? "PC's friend called regarding PC's "+ct+" case."
+               : "PC called regarding their "+ct+" case.";
+    var city = g('i-city'), county = g('i-county');
+    var loc = [city, county ? county+' County' : ''].filter(Boolean).join(', ');
+    return [
+      pln(opener),
+      inl('Originated By', g('v-orig')),
+      g('i-name') ? inl('Caller', g('i-name')) : '',
+      inl('Court File Number', g('i-filenum')),
+      inl('Offense Date', fd('i-odate')),
+      inl('Court Date', fd('i-cdate')),
+      inl('Location', loc),
+      sec('Details', bul('i-details')),
+      inl('Fee Quoted', fee(g('i-fee'))),
+      sec('Next Steps', bul('i-steps')),
+    ].join('');
+  }
+
+  function buildCourt() {
+    var atty = g('v-atty') || 'GWM';
+    var app  = g('v-app');
+    var appTxt = app.toLowerCase().indexOf('without') >= 0 ? 'without Client' : 'with Client';
+    var htype = g('v-htype') || 'hearing';
+    var date = fd('c-date');
+    var opener = atty+' appeared '+appTxt+' at the '+htype+(date?' on '+date:'')+'.';
+    var nextLine = [fd('c-nextdate'), g('c-nexttype')].filter(Boolean).join(' \u2013 ');
+    return [
+      pln(opener),
+      inl('Judge', g('c-judge')),
+      inl('Prosecutor', g('c-pros')),
+      inl('Assistant Attorney General', g('c-aag')),
+      inl('Testifying Witness', g('c-witness')),
+      sec('Offer', bul('c-offer')),
+      sec('Details', bul('c-details')),
+      inl('Next Court Date', nextLine),
+      inl('Brief Due Date', fd('c-brief')),
+      sec('PMM', bul('c-pmm')),
+      sec('Key Points for Client Email', bul('c-kp')),
+    ].join('');
+  }
+
+  function buildReview() {
+    var atty = g('v-atty') || 'GWM';
+    var meet = g('v-meet') || 'meeting';
+    var opener = atty+' met with Client via '+meet+' to review the status of the case and discuss strategy moving forward.';
+    var offerRaw = g('r-offer');
+    return [
+      pln(opener),
+      sec('Case Discussion', bul('r-disc')),
+      offerRaw ? sec('Offer Relayed', bul('r-offer')) : sec('Offer Relayed','<div>No offer relayed at this time.</div>'),
+      inl('Client Position', g('v-pos')),
+      sec("Attorney's Advice", bul('r-advice')),
+      sec('Decision', bul('r-dec')),
+      sec('Next Steps', bul('r-steps')),
+    ].join('');
+  }
+
+  function generate() {
+    var btn = document.getElementById('gen-btn');
+    var spin = document.getElementById('spin');
+    var outText = document.getElementById('out-text');
+    document.getElementById('out-lbl').textContent = {intake:'Intake Note',court:'Court Summary Note',review:'Case Review Note'}[TAB];
+    btn.disabled = true;
+    document.getElementById('out-box').classList.add('show');
+    spin.classList.add('show');
+    outText.innerHTML = '';
+    HTML = '';
+    setTimeout(function(){
+      HTML = {intake:buildIntake,court:buildCourt,review:buildReview}[TAB]();
+      outText.innerHTML = HTML;
+      spin.classList.remove('show');
+      btn.disabled = false;
+    }, 120);
+  }
+
+  function copyNote() {
+    if (!HTML) return;
+    var btn = document.getElementById('copy-btn');
+    try {
+      navigator.clipboard.write([new ClipboardItem({'text/html': new Blob([HTML],{type:'text/html'})})]);
+    } catch(e) {
+      var d = document.createElement('div'); d.innerHTML = HTML;
+      navigator.clipboard.writeText(d.innerText);
+    }
+    btn.textContent = 'Copied!'; btn.classList.add('done');
+    setTimeout(function(){ btn.textContent = 'Copy'; btn.classList.remove('done'); }, 2000);
+  }
+</script>
+</body>
+</html>
